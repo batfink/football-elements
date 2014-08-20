@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Untilted document</title>
 
   <script src="build.js"></script>
@@ -11,13 +12,7 @@
 </head>
 <body>
 
-  <button is="mongo-button" msg="tjobing!">Klikk meg!</button>
-
-  <script>
-    var button = document.createElement('button', 'mongo-button');
-    button.appendChild(document.createTextNode('Klikk meg og!'))
-    document.body.appendChild(button);
-  </script>
+  <football-panel operation="teams" route="tables" key="666"></football-panel>
 
 </body>
 </html>

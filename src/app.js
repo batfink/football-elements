@@ -1,2 +1,2 @@
 require('./document-register-element');
-require('./element');
+require('./football-panel');

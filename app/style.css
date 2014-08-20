@@ -10,16 +10,14 @@ html, body {
   background: #efefef;
 }
 
-button[is='mongo-button'] {
-  outline: none;
-  background: #f90;
-  color: white;
-  border: none;
-  padding: .5rem 1rem;
-  font-size: 3rem;
+table {
+    border-collapse: collapse;
 }
 
-button[is='mongo-button']:active {
-  background: #fff;
-  color: #f90;
+th, td {
+    padding: .5em 1em;
+}
+
+table, th, td {
+    border: 1px solid gray;
 }
