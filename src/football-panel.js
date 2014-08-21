@@ -61,7 +61,9 @@ var proto = Object.create( HTMLElement.prototype, {
     }
 });
 
-
+module.exports = document.registerElement('football-panel', {
+  prototype: proto
+});
 
 // var proto = Object.create(HTMLButtonElement.prototype, {
 //   createdCallback: {
@@ -86,7 +88,3 @@ var proto = Object.create( HTMLElement.prototype, {
 //     }
 //   }
 // });
-
-module.exports = document.registerElement('football-panel', {
-  prototype: proto
-});

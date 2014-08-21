@@ -2,6 +2,9 @@
   "author": "Victor Nystad",
   "version": "0.0.1",
   "description": "An experiment with mixins. Solves the problem of copying getter and setter methods from one object to another.",
+  "browserify" : {
+    "transform" : ["hbsfy"]
+  },
   "devDependencies": {
     "gulp-open": "~0.2.8",
     "gulp": "~3.8.7",
