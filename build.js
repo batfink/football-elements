@@ -1,9 +1,9 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 require('document-register-element');
-require('es6-promise');
+// require('es6-promise').Promise;
 require('./football-panel');
 
-},{"./football-panel":24,"document-register-element":3,"es6-promise":4}],2:[function(require,module,exports){
+},{"./football-panel":24,"document-register-element":3}],2:[function(require,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};
@@ -1256,7 +1256,7 @@ module.exports = require('./dist/cjs/handlebars.runtime');
 module.exports = require("handlebars/runtime")["default"];
 
 },{"handlebars/runtime":20}],22:[function(require,module,exports){
-var template = require('./table.hbs');
+var template = require('../templates/table.hbs');
 
 function buildHTML(data, attributes) {
   // use attributes to determine template if alternative 2 is used in the football-panel module, else come up with something else
@@ -1266,19 +1266,19 @@ function buildHTML(data, attributes) {
 
 module.exports = buildHTML;
 
-},{"./table.hbs":28}],23:[function(require,module,exports){
+},{"../templates/table.hbs":27}],23:[function(require,module,exports){
+var Promise = require('es6-promise').Promise;
+
 function createUrl(attributes) {
-  return new Promise(function (resolve, reject) {
-    resolve('http://api.fotballdata.no/v1/' + attributes.operation + '/' + attributes.key + (!!attributes.route ? '/' + attributes.route : '') + '.json')
-  })        
+  return Promise.resolve('http://api.fotballdata.no/v1/' + attributes.operation + '/' + attributes.key + (!!attributes.route ? '/' + attributes.route : '') + '.json')
 };
 
 module.exports = createUrl;
 
-},{}],24:[function(require,module,exports){
+},{"es6-promise":4}],24:[function(require,module,exports){
 "use strict";
 
-var getJSON = require('./get-json');
+var getJSON = require('./get').getJSON;
 var readAttributes = require('./read-attributes');
 var createUrl = require('./create-url');
 var buildHTML = require('./build-html');
@@ -1340,16 +1340,7 @@ module.exports = document.registerElement('football-panel', {
   prototype: proto
 });
 
-},{"./build-html":22,"./create-url":23,"./get-json":25,"./read-attributes":27}],25:[function(require,module,exports){
-var get = require('./get');
-
-function getJSON(url) {
-    return get(url).then(JSON.parse);
-};
-
-module.exports = getJSON;
-
-},{"./get":26}],26:[function(require,module,exports){
+},{"./build-html":22,"./create-url":23,"./get":25,"./read-attributes":26}],25:[function(require,module,exports){
 var Promise = require('es6-promise').Promise;
 
 function get(url) {
@@ -1373,9 +1364,14 @@ function get(url) {
     })
 };
 
-module.exports = get;
+function getJSON(url) {
+    return get(url).then(JSON.parse);
+};
 
-},{"es6-promise":4}],27:[function(require,module,exports){
+module.exports.get = get;
+module.exports.getJSON = getJSON;
+
+},{"es6-promise":4}],26:[function(require,module,exports){
 'use strict';
 
 var Promise = require('es6-promise').Promise;
@@ -1383,32 +1379,28 @@ var Promise = require('es6-promise').Promise;
 function readAttributes(element) {
 
     return new Promise(function (resolve, reject) {
-      try {
 
-        var attributes = {};
+      var attributes = {};
 
-        attributes.operation = element.getAttribute('operation');
-        attributes.key = element.getAttribute('key');
-        if (!!element.getAttribute('route')) {
-          attributes.route = element.getAttribute('route');
-        };
+      attributes.operation = element.getAttribute('operation');
+      attributes.key = element.getAttribute('key');
+      if (!!element.getAttribute('route')) {
+        attributes.route = element.getAttribute('route');
+      };
 
-        if (!!attributes.operation && !!attributes.key) {
-          resolve(attributes);
-        } else {
-          throw new Error('missing attributes');
-        }
-
-      } catch(e) {
-        reject(e);
+      if (!!attributes.operation && !!attributes.key) {
+        resolve(attributes);
+      } else {
+        reject(Error('missing attributes'));
       }
+
     });
 
 };
 
 module.exports = readAttributes;
 
-},{"es6-promise":4}],28:[function(require,module,exports){
+},{"es6-promise":4}],27:[function(require,module,exports){
 // hbsfy compiled Handlebars template
 var Handlebars = require('hbsfy/runtime');
 module.exports = Handlebars.template({"1":function(depth0,helpers,partials,data) {
