@@ -1,62 +1,59 @@
 "use strict";
 
-// var extend = require('./extend');
-// var mixins = require('./mixins');
+var getJSON = require('./get-json');
+var readAttributes = require('./read-attributes');
+var createUrl = require('./create-url');
+var buildHTML = require('./build-html');
 
-var template = require('./table.hbs');
 
 var proto = Object.create( HTMLElement.prototype, {
     createdCallback: {
         value: function () {
-            console.log('created');
-            this.readAttributes();
-            this.getJSON();
+
+            var element = this;
+
+
+            // alternative 1 - cleaner syntax, but no way to know which template to use in buildHTML
+
+            readAttributes(element)
+              .then(createUrl)
+              .then(getJSON)
+              .then(buildHTML)
+              .then(function(html) {
+                element.innerHTML = html;
+              })
+              .then(console.log.bind(console, element))
+              .catch(function(e) {
+                console.error(e.message);
+              })
+
+
+            // alternative 2 - uglier syntax, but the attributes object is now available for the buildHTML function
+
+            // readAttributes(this).then(function(response) {
+            //
+            //   return createUrl(response)
+            //     .then(getJSON)
+            //     .then(function(json) {
+            //       return buildHTML(json, response)
+            //     })
+            //     .then(function(html) {
+            //       element.innerHTML = html;
+            //     })
+            //     .then(console.log.bind(console, element))
+            //     .catch(function(e) {
+            //       throw new Error(e.message); // re-throw error to have error handling in same place
+            //     })
+            //
+            // }).catch(function(e) {
+            //   console.error(e.message);
+            // });
+
         }
-    },
-    readAttributes: {
-      value: function () {
-        this.operation = this.getAttribute('operation');
-        if (!!this.getAttribute('route')) {
-          this.route = this.getAttribute('route');
-        }
-        this.key = this.getAttribute('key');
-      }
     },
     attributeChangedCallback : {
       value: function () {
         console.log('attribute changed');
-      }
-    },
-    getJSON : {
-      value: function () {
-
-        var that = this, xhr = new XMLHttpRequest();
-
-        xhr.open('GET', 'http://api.fotballdata.no/v1/' + this.operation + '/' + this.key + (!!this.route ? '/' + this.route : '') + '.json', true);
-
-        xhr.onerror = function() {
-            console.log('transfer failed');
-        };
-
-        xhr.onload = function() {
-          that.buildHTML(JSON.parse(this.responseText));
-        };
-
-        xhr.ontimeout = function(){
-          console.log('timeout');
-        };
-
-        xhr.send();
-
-      }
-    },
-    buildHTML: {
-      value: function (data) {
-
-        this.innerHTML = template(data.Tournaments[0]);
-
-        console.log(this, data.Tournaments[0]);
-
       }
     }
 });
@@ -64,27 +61,3 @@ var proto = Object.create( HTMLElement.prototype, {
 module.exports = document.registerElement('football-panel', {
   prototype: proto
 });
-
-// var proto = Object.create(HTMLButtonElement.prototype, {
-//   createdCallback: {
-//     value: function () {
-//       // extend this prototype with the mixins prototype
-//       extend(proto, mixins);
-//
-//       // read attributes from html element
-//       this.readAttributes();
-//
-//       // use the sayHello method from the mixin
-//       this.addEventListener('click', this.sayHello);
-//
-//       // check what’s in the proto object
-//       //console.log(proto);
-//     }
-//   },
-//   readAttributes : {
-//     value: function () {
-//       // use the setter method to set the value of the msg property on the mixin prototype to the html-attribute of the custom element (see index.html)
-//       this.msg = this.getAttribute('msg') || 'default message';
-//     }
-//   }
-// });
