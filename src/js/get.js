@@ -21,4 +21,9 @@ function get(url) {
     })
 };
 
-module.exports = get;
+function getJSON(url) {
+    return get(url).then(JSON.parse);
+};
+
+module.exports.get = get;
+module.exports.getJSON = getJSON;

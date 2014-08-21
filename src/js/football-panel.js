@@ -1,6 +1,6 @@
 "use strict";
 
-var getJSON = require('./get-json');
+var getJSON = require('./get').getJSON;
 var readAttributes = require('./read-attributes');
 var createUrl = require('./create-url');
 var buildHTML = require('./build-html');
