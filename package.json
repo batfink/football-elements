@@ -1,7 +1,7 @@
 {
   "author": "Victor Nystad",
   "version": "0.0.1",
-  "description": "An experiment with mixins. Solves the problem of copying getter and setter methods from one object to another.",
+  "description": "Custom elements with data from fotballdata.no",
   "browserify": {
     "transform": [
       "hbsfy"
