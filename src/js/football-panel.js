@@ -30,9 +30,9 @@ var proto = Object.create( HTMLElement.prototype, {
 
             // alternative 2 - uglier syntax, but the attributes object is now available for the buildHTML function
 
-            // readAttributes(this).then(function(response) {
+            // readAttributes(this).then(function(attributes) {
             //
-            //   return createUrl(response)
+            //   return createUrl(attributes)
             //     .then(getJSON)
             //     .then(function(json) {
             //       return buildHTML(json, response)
