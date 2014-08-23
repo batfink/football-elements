@@ -1,9 +1,9 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 require('document-register-element');
-require('es6-promise');
+// require('es6-promise').Promise;
 require('./football-panel');
 
-},{"./football-panel":24,"document-register-element":3,"es6-promise":4}],2:[function(require,module,exports){
+},{"./football-panel":24,"document-register-element":3}],2:[function(require,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};
@@ -1256,29 +1256,60 @@ module.exports = require('./dist/cjs/handlebars.runtime');
 module.exports = require("handlebars/runtime")["default"];
 
 },{"handlebars/runtime":20}],22:[function(require,module,exports){
-var template = require('./table.hbs');
+// var tables = require('../templates/tables.hbs');
+// var matches = require('../templates/matches.hbs');
+//
+
+require('./format-date');
+
 
 function buildHTML(data, attributes) {
+
+    // console.log(Handlebars);
+
+    var operation = attributes.operation,
+        route = attributes.route,
+        tableData;
+
+        // console.log(route);
+
+    var templates = {
+        tables : require('../templates/tables.hbs'),
+        matches : require('../templates/matches.hbs')
+    };
+
+    switch(route) {
+        case 'tables':
+            tableData = data.Tournaments[0];
+            break;
+
+        case 'matches':
+            tableData = data.Matches;
+            break;
+    }
+
+    // var template =
+
   // use attributes to determine template if alternative 2 is used in the football-panel module, else come up with something else
-  console.log('build html:', data, attributes);
-  return template(data.Tournaments[0]);
+  // console.log('build html:', data, attributes);
+  return templates[route](tableData);
 }
 
 module.exports = buildHTML;
 
-},{"./table.hbs":28}],23:[function(require,module,exports){
+},{"../templates/matches.hbs":28,"../templates/tables.hbs":29,"./format-date":25}],23:[function(require,module,exports){
+var Promise = require('es6-promise').Promise;
+
 function createUrl(attributes) {
-  return new Promise(function (resolve, reject) {
-    resolve('http://api.fotballdata.no/v1/' + attributes.operation + '/' + attributes.key + (!!attributes.route ? '/' + attributes.route : '') + '.json')
-  })        
+  return Promise.resolve('http://api.fotballdata.no/v1/' + attributes.operation + '/' + attributes.key + (!!attributes.route ? '/' + attributes.route : '') + '.json')
 };
 
 module.exports = createUrl;
 
-},{}],24:[function(require,module,exports){
+},{"es6-promise":4}],24:[function(require,module,exports){
 "use strict";
 
-var getJSON = require('./get-json');
+var getJSON = require('./get').getJSON;
 var readAttributes = require('./read-attributes');
 var createUrl = require('./create-url');
 var buildHTML = require('./build-html');
@@ -1293,39 +1324,40 @@ var proto = Object.create( HTMLElement.prototype, {
 
             // alternative 1 - cleaner syntax, but no way to know which template to use in buildHTML
 
-            readAttributes(element)
-              .then(createUrl)
-              .then(getJSON)
-              .then(buildHTML)
-              .then(function(html) {
-                element.innerHTML = html;
-              })
-              .then(console.log.bind(console, element))
-              .catch(function(e) {
-                console.error(e.message);
-              })
+            // readAttributes(element)
+            //   .then(createUrl)
+            //   .then(getJSON)
+            //   .then(buildHTML)
+            //   .then(function(html) {
+            //     element.innerHTML = html;
+            //   })
+            //   .then(console.log.bind(console, element))
+            //   .catch(function(e) {
+            //     console.error(e.message);
+            //   })
 
 
             // alternative 2 - uglier syntax, but the attributes object is now available for the buildHTML function
 
-            // readAttributes(this).then(function(response) {
-            //
-            //   return createUrl(response)
-            //     .then(getJSON)
-            //     .then(function(json) {
-            //       return buildHTML(json, response)
-            //     })
-            //     .then(function(html) {
-            //       element.innerHTML = html;
-            //     })
-            //     .then(console.log.bind(console, element))
-            //     .catch(function(e) {
-            //       throw new Error(e.message); // re-throw error to have error handling in same place
-            //     })
-            //
-            // }).catch(function(e) {
-            //   console.error(e.message);
-            // });
+            readAttributes(this).then(function(attributes) {
+
+              return createUrl(attributes)
+                .then(getJSON)
+                .then(function(json) {
+                    // console.log('json:', json);
+                    return buildHTML(json, attributes)
+                })
+                .then(function(html) {
+                  element.innerHTML = html;
+                })
+                // .then(console.log.bind(console, element))
+                .catch(function(e) {
+                  throw new Error(e); // re-throw error to have error handling in same place
+                })
+
+            }).catch(function(e) {
+              console.error(e);
+            });
 
         }
     },
@@ -1340,16 +1372,21 @@ module.exports = document.registerElement('football-panel', {
   prototype: proto
 });
 
-},{"./build-html":22,"./create-url":23,"./get-json":25,"./read-attributes":27}],25:[function(require,module,exports){
-var get = require('./get');
+},{"./build-html":22,"./create-url":23,"./get":26,"./read-attributes":27}],25:[function(require,module,exports){
+var handlebars = require('hbsfy/runtime');
 
-function getJSON(url) {
-    return get(url).then(JSON.parse);
+function formatDate(date) {
+    // console.log(typeof date);
+    // var d =
+    // var d = date.match(/([0-9-])+/)[0];
+    // console.log(d typeof Number);
+    // console.log(new Date(Number());
+    return date;
 };
 
-module.exports = getJSON;
+module.exports = handlebars.registerHelper('formatDate', formatDate);
 
-},{"./get":26}],26:[function(require,module,exports){
+},{"hbsfy/runtime":21}],26:[function(require,module,exports){
 var Promise = require('es6-promise').Promise;
 
 function get(url) {
@@ -1373,7 +1410,12 @@ function get(url) {
     })
 };
 
-module.exports = get;
+function getJSON(url) {
+    return get(url).then(JSON.parse);
+};
+
+module.exports.get = get;
+module.exports.getJSON = getJSON;
 
 },{"es6-promise":4}],27:[function(require,module,exports){
 'use strict';
@@ -1383,25 +1425,21 @@ var Promise = require('es6-promise').Promise;
 function readAttributes(element) {
 
     return new Promise(function (resolve, reject) {
-      try {
 
-        var attributes = {};
+      var attributes = {};
 
-        attributes.operation = element.getAttribute('operation');
-        attributes.key = element.getAttribute('key');
-        if (!!element.getAttribute('route')) {
-          attributes.route = element.getAttribute('route');
-        };
+      attributes.operation = element.getAttribute('operation');
+      attributes.key = element.getAttribute('key');
+      if (!!element.getAttribute('route')) {
+        attributes.route = element.getAttribute('route');
+      };
 
-        if (!!attributes.operation && !!attributes.key) {
-          resolve(attributes);
-        } else {
-          throw new Error('missing attributes');
-        }
-
-      } catch(e) {
-        reject(e);
+      if (!!attributes.operation && !!attributes.key) {
+        resolve(attributes);
+      } else {
+        reject(Error('missing attributes'));
       }
+
     });
 
 };
@@ -1409,6 +1447,33 @@ function readAttributes(element) {
 module.exports = readAttributes;
 
 },{"es6-promise":4}],28:[function(require,module,exports){
+// hbsfy compiled Handlebars template
+var Handlebars = require('hbsfy/runtime');
+module.exports = Handlebars.template({"1":function(depth0,helpers,partials,data) {
+  var helper, helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression, functionType="function";
+  return "\n            <tr>\n                <td data-th=\"Dato/tid\">"
+    + escapeExpression((helper = helpers.formatDate || (depth0 && depth0.formatDate) || helperMissing,helper.call(depth0, (depth0 && depth0.MatchStartDate), {"name":"formatDate","hash":{},"data":data})))
+    + "</td>\n                <td data-th=\"Runde\">"
+    + escapeExpression(((helper = helpers.TournamentRoundNumber || (depth0 && depth0.TournamentRoundNumber)),(typeof helper === functionType ? helper.call(depth0, {"name":"TournamentRoundNumber","hash":{},"data":data}) : helper)))
+    + "</td>\n                <td data-th=\"Hjemmelag\">"
+    + escapeExpression(((helper = helpers.HomeTeamName || (depth0 && depth0.HomeTeamName)),(typeof helper === functionType ? helper.call(depth0, {"name":"HomeTeamName","hash":{},"data":data}) : helper)))
+    + "</td>\n                <td data-th=\"Resultat\">"
+    + escapeExpression(((helper = helpers.HomeTeamGoals || (depth0 && depth0.HomeTeamGoals)),(typeof helper === functionType ? helper.call(depth0, {"name":"HomeTeamGoals","hash":{},"data":data}) : helper)))
+    + " – "
+    + escapeExpression(((helper = helpers.AwayTeamGoals || (depth0 && depth0.AwayTeamGoals)),(typeof helper === functionType ? helper.call(depth0, {"name":"AwayTeamGoals","hash":{},"data":data}) : helper)))
+    + "</td>\n                <td data-th=\"Bortelag\">"
+    + escapeExpression(((helper = helpers.AwayTeamName || (depth0 && depth0.AwayTeamName)),(typeof helper === functionType ? helper.call(depth0, {"name":"AwayTeamName","hash":{},"data":data}) : helper)))
+    + "</td>\n                <td data-th=\"Bane\">"
+    + escapeExpression(((helper = helpers.StadiumName || (depth0 && depth0.StadiumName)),(typeof helper === functionType ? helper.call(depth0, {"name":"StadiumName","hash":{},"data":data}) : helper)))
+    + "</td>\n            </tr>\n        ";
+},"compiler":[5,">= 2.0.0"],"main":function(depth0,helpers,partials,data) {
+  var stack1, buffer = "<table>\n    <!-- <caption>Eksempel på kamp-kalender</caption> -->\n    <thead>\n        <tr>\n            <th>Dato/tid</th>\n            <th>Runde</th>\n            <th>Hjemmelag</th>\n            <th>Resultat</th>\n            <th>Bortelag</th>\n            <th>Bane</th>\n        </tr>\n    </thead>\n    <tbody>\n        ";
+  stack1 = helpers.each.call(depth0, depth0, {"name":"each","hash":{},"fn":this.program(1, data),"inverse":this.noop,"data":data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  return buffer + "        \n    </tbody>\n</table>\n";
+},"useData":true});
+
+},{"hbsfy/runtime":21}],29:[function(require,module,exports){
 // hbsfy compiled Handlebars template
 var Handlebars = require('hbsfy/runtime');
 module.exports = Handlebars.template({"1":function(depth0,helpers,partials,data) {
