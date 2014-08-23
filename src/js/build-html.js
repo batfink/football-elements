@@ -16,7 +16,7 @@ function buildHTML(data, attributes) {
         // console.log(route);
 
     var templates = {
-        tables : require('../templates/tables.hbs'),
+        // tables : require('../templates/tables.hbs'),
         matches : require('../templates/matches.hbs')
     };
 

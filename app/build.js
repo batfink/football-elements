@@ -1274,7 +1274,7 @@ function buildHTML(data, attributes) {
         // console.log(route);
 
     var templates = {
-        tables : require('../templates/tables.hbs'),
+        // tables : require('../templates/tables.hbs'),
         matches : require('../templates/matches.hbs')
     };
 
@@ -1297,7 +1297,7 @@ function buildHTML(data, attributes) {
 
 module.exports = buildHTML;
 
-},{"../templates/matches.hbs":28,"../templates/tables.hbs":29,"./format-date":25}],23:[function(require,module,exports){
+},{"../templates/matches.hbs":28,"./format-date":25}],23:[function(require,module,exports){
 var Promise = require('es6-promise').Promise;
 
 function createUrl(attributes) {
@@ -1471,23 +1471,6 @@ module.exports = Handlebars.template({"1":function(depth0,helpers,partials,data)
   stack1 = helpers.each.call(depth0, depth0, {"name":"each","hash":{},"fn":this.program(1, data),"inverse":this.noop,"data":data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   return buffer + "        \n    </tbody>\n</table>\n";
-},"useData":true});
-
-},{"hbsfy/runtime":21}],29:[function(require,module,exports){
-// hbsfy compiled Handlebars template
-var Handlebars = require('hbsfy/runtime');
-module.exports = Handlebars.template({"1":function(depth0,helpers,partials,data) {
-  var helper, functionType="function", escapeExpression=this.escapeExpression;
-  return "\n        <tr>\n            <td>"
-    + escapeExpression(((helper = helpers.TeamName || (depth0 && depth0.TeamName)),(typeof helper === functionType ? helper.call(depth0, {"name":"TeamName","hash":{},"data":data}) : helper)))
-    + "</td>\n        </tr>\n    ";
-},"compiler":[5,">= 2.0.0"],"main":function(depth0,helpers,partials,data) {
-  var stack1, helper, functionType="function", escapeExpression=this.escapeExpression, buffer = "<table>\n    <caption>"
-    + escapeExpression(((helper = helpers.TournamentName || (depth0 && depth0.TournamentName)),(typeof helper === functionType ? helper.call(depth0, {"name":"TournamentName","hash":{},"data":data}) : helper)))
-    + "</caption>\n    ";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.TournamentTableTeams), {"name":"each","hash":{},"fn":this.program(1, data),"inverse":this.noop,"data":data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  return buffer + "\n</table>\n";
 },"useData":true});
 
 },{"hbsfy/runtime":21}]},{},[1]);
