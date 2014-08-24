@@ -1376,8 +1376,9 @@ module.exports = document.registerElement('football-panel', {
 var handlebars = require('hbsfy/runtime');
 
 function formatDate(date) {
-    var d = date.match(/([0-9])+/)[0];
-    return new Date(d);
+    date = new Date(Number(date.match(/([0-9])+/)[0]));
+    console.log();
+    return ('0' + date.getDate()).slice(-2) + '.' + ('0' + (date.getMonth()+1)).slice(-2) + '.' + (date.getFullYear());
 };
 
 module.exports = handlebars.registerHelper('formatDate', formatDate);
@@ -1447,7 +1448,7 @@ module.exports = readAttributes;
 var Handlebars = require('hbsfy/runtime');
 module.exports = Handlebars.template({"1":function(depth0,helpers,partials,data) {
   var helper, helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression, functionType="function";
-  return "\n            <tr>\n                <td data-th=\"Dato/tid\">"
+  return "\n            <tr>\n                <td data-th=\"Dato\">"
     + escapeExpression((helper = helpers.formatDate || (depth0 && depth0.formatDate) || helperMissing,helper.call(depth0, (depth0 && depth0.MatchStartDate), {"name":"formatDate","hash":{},"data":data})))
     + "</td>\n                <td data-th=\"Runde\">"
     + escapeExpression(((helper = helpers.TournamentRoundNumber || (depth0 && depth0.TournamentRoundNumber)),(typeof helper === functionType ? helper.call(depth0, {"name":"TournamentRoundNumber","hash":{},"data":data}) : helper)))
@@ -1463,10 +1464,10 @@ module.exports = Handlebars.template({"1":function(depth0,helpers,partials,data)
     + escapeExpression(((helper = helpers.StadiumName || (depth0 && depth0.StadiumName)),(typeof helper === functionType ? helper.call(depth0, {"name":"StadiumName","hash":{},"data":data}) : helper)))
     + "</td>\n            </tr>\n        ";
 },"compiler":[5,">= 2.0.0"],"main":function(depth0,helpers,partials,data) {
-  var stack1, buffer = "<table>\n    <!-- <caption>Eksempel på kamp-kalender</caption> -->\n    <thead>\n        <tr>\n            <th>Dato/tid</th>\n            <th>Runde</th>\n            <th>Hjemmelag</th>\n            <th>Resultat</th>\n            <th>Bortelag</th>\n            <th>Bane</th>\n        </tr>\n    </thead>\n    <tbody>\n        ";
+  var stack1, buffer = "<table>\n    <!-- <caption>Eksempel på kamp-kalender</caption> -->\n    <thead>\n        <tr>\n            <th>Dato</th>\n            <th>Runde</th>\n            <th>Hjemmelag</th>\n            <th>Resultat</th>\n            <th>Bortelag</th>\n            <th>Bane</th>\n        </tr>\n    </thead>\n    <tbody>\n        ";
   stack1 = helpers.each.call(depth0, depth0, {"name":"each","hash":{},"fn":this.program(1, data),"inverse":this.noop,"data":data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  return buffer + "        \n    </tbody>\n</table>\n";
+  return buffer + "\n    </tbody>\n</table>\n";
 },"useData":true});
 
 },{"hbsfy/runtime":21}]},{},[1]);
