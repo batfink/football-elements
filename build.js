@@ -1376,8 +1376,9 @@ module.exports = document.registerElement('football-panel', {
 var handlebars = require('hbsfy/runtime');
 
 function formatDate(date) {
-    var d = date.match(/([0-9])+/)[0];
-    return new Date(d);
+    date = new Date(Number(date.match(/([0-9])+/)[0]));
+    console.log(date.getDate());
+    return new Date(date);
 };
 
 module.exports = handlebars.registerHelper('formatDate', formatDate);
