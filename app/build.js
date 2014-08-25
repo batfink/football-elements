@@ -1,9 +1,10 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 require('document-register-element');
+require('./format-date');
 // require('es6-promise').Promise;
 require('./football-panel');
 
-},{"./football-panel":24,"document-register-element":3}],2:[function(require,module,exports){
+},{"./football-panel":24,"./format-date":25,"document-register-element":3}],2:[function(require,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};
@@ -1260,22 +1261,27 @@ module.exports = require("handlebars/runtime")["default"];
 // var matches = require('../templates/matches.hbs');
 //
 
-require('./format-date');
 
+var matches = require('../templates/matches.hbs');
 
 function buildHTML(data, attributes) {
 
-    // console.log(Handlebars);
 
-    var operation = attributes.operation,
-        route = attributes.route,
+
+    // var operation = attributes.operation,
+    //     route = attributes.route,
+    //     tableData;
+
+
+    var operation = this.getAttribute('operation'),
+        route = this.getAttribute('route'),
         tableData;
 
         // console.log(route);
 
     var templates = {
         // tables : require('../templates/tables.hbs'),
-        matches : require('../templates/matches.hbs')
+        matches : matches
     };
 
     switch(route) {
@@ -1292,12 +1298,13 @@ function buildHTML(data, attributes) {
 
   // use attributes to determine template if alternative 2 is used in the football-panel module, else come up with something else
   // console.log('build html:', data, attributes);
-  return templates[route](tableData);
+  this.innerHTML = templates[route](tableData);
+  // return templates[route](tableData);
 }
 
 module.exports = buildHTML;
 
-},{"../templates/matches.hbs":28,"./format-date":25}],23:[function(require,module,exports){
+},{"../templates/matches.hbs":28}],23:[function(require,module,exports){
 var Promise = require('es6-promise').Promise;
 
 function createUrl(attributes) {
@@ -1317,54 +1324,23 @@ var buildHTML = require('./build-html');
 
 var proto = Object.create( HTMLElement.prototype, {
     createdCallback: {
+        value: function () { }
+    },
+    attachedCallback : {
         value: function () {
-
-            var element = this;
-
-
-            // alternative 1 - cleaner syntax, but no way to know which template to use in buildHTML
-
-            // readAttributes(element)
-            //   .then(createUrl)
-            //   .then(getJSON)
-            //   .then(buildHTML)
-            //   .then(function(html) {
-            //     element.innerHTML = html;
-            //   })
-            //   .then(console.log.bind(console, element))
-            //   .catch(function(e) {
-            //     console.error(e.message);
-            //   })
-
-
-            // alternative 2 - uglier syntax, but the attributes object is now available for the buildHTML function
-
-            readAttributes(this).then(function(attributes) {
-
-              return createUrl(attributes)
-                .then(getJSON)
-                .then(function(json) {
-                    // console.log('json:', json);
-                    return buildHTML(json, attributes)
-                })
-                .then(function(html) {
-                  element.innerHTML = html;
-                })
-                // .then(console.log.bind(console, element))
-                .catch(function(e) {
-                  throw new Error(e); // re-throw error to have error handling in same place
-                })
-
-            }).catch(function(e) {
-              console.error(e);
-            });
-
+            readAttributes(this)
+              .then(createUrl)
+              .then(getJSON)
+              .then(buildHTML.bind(this))
+              .then(console.log.bind(console, this))
+            .catch(console.error.bind(console))
         }
     },
     attributeChangedCallback : {
-      value: function () {
-        console.log('attribute changed');
-      }
+        value: function (attrName, oldVal, newVal) { }
+    },
+    detachedCallback : {
+        value: function () { }
     }
 });
 
@@ -1377,11 +1353,10 @@ var handlebars = require('hbsfy/runtime');
 
 function formatDate(date) {
     date = new Date(Number(date.match(/([0-9])+/)[0]));
-    console.log();
     return ('0' + date.getDate()).slice(-2) + '.' + ('0' + (date.getMonth()+1)).slice(-2) + '.' + (date.getFullYear());
 };
 
-module.exports = handlebars.registerHelper('formatDate', formatDate);
+handlebars.registerHelper('formatDate', formatDate);
 
 },{"hbsfy/runtime":21}],26:[function(require,module,exports){
 var Promise = require('es6-promise').Promise;
@@ -1437,7 +1412,7 @@ function readAttributes(element) {
         reject(Error('missing attributes'));
       }
 
-    });
+  });
 
 };
 

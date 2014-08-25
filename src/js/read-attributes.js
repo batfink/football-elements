@@ -20,7 +20,7 @@ function readAttributes(element) {
         reject(Error('missing attributes'));
       }
 
-    });
+  });
 
 };
 
